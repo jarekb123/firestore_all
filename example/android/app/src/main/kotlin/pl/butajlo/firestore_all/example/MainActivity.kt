@@ -1,4 +1,4 @@
-package com.example.example
+package pl.butajlo.firestore_all.example
 
 import android.os.Bundle
 
