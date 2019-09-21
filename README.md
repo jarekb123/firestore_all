@@ -1,14 +1,25 @@
 # firestore_all
 
-A new flutter plugin project.
+Plugin that wraps Firestore from `firebase` and `cloud_firestore` packages and expose them as a single API.
 
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+To get the Firestore instance use `setupFirestore` function.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+```dart
+  var firestore = setupFirestore(
+    webApiKey: 'apiKey',
+    webAuthDomain: 'authDomain',
+    webDatabaseUrl: 'databaseUrl',
+    webProjectId: 'projectId',
+    webStorageBucket: 'storageBucket',
+  );
+```
+
+## TODO
+* [x] Wrap Firestore from `firebase` package (for Flutter web) 
+* [x] Wrap Firestore from `cloud_firestore` (for Flutter Android/iOS)
+* [x] Test: Check if it's working on web
+* [x] Test: Check if it's working on Android
+* [ ] Test: Check if it's working on iOS
+* [ ] Integrate with Firebase Auth
