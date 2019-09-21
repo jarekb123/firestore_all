@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:firebase/firebase.dart' as firebase;
 import 'package:firebase/firestore.dart' as js;
 
 import 'firestore_interface.dart';
 
-final SetupFirestore setupFirestore = ({
+Firestore setupFirestore({
   String webApiKey,
   String webAuthDomain,
   String webDatabaseUrl,
@@ -21,7 +19,7 @@ final SetupFirestore setupFirestore = ({
   );
 
   return Firestore._(firebase.firestore(app));
-};
+}
 
 class Firestore implements FirestoreInterface {
   final js.Firestore _firestore;
@@ -188,7 +186,8 @@ class WebDocumentSnapshot implements DocumentSnapshot {
   DocumentReference get reference =>
       WebDocumentReference._(_documentSnapshot.ref);
 
-  Map<String, dynamic> get data => _documentSnapshot.data().map(_mapToSharedType);
+  Map<String, dynamic> get data =>
+      _documentSnapshot.data().map(_mapToSharedType);
 
   /// Reads individual values from the snapshot
   dynamic operator [](String key) => data[key];

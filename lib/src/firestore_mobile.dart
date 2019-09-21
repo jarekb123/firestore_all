@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' as cf;
 
 import 'firestore_interface.dart';
 
-final SetupFirestore setupFirestore = ({
+Firestore setupFirestore({
   String webApiKey,
   String webAuthDomain,
   String webDatabaseUrl,
@@ -10,7 +10,7 @@ final SetupFirestore setupFirestore = ({
   String webStorageBucket,
 }) {
   return Firestore._(cf.Firestore.instance);
-};
+}
 
 class Firestore implements FirestoreInterface {
   final cf.Firestore _firestore;

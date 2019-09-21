@@ -1,16 +1,35 @@
 import 'dart:typed_data';
 
-typedef FirestoreInterface SetupFirestore({
+Firestore setupFirestore({
   String webApiKey,
   String webAuthDomain,
   String webDatabaseUrl,
   String webProjectId,
   String webStorageBucket,
-});
+}) {
+  throw Exception('You cannot use Firestore in this environment');
+}
 
 class FirestoreApp {}
 
-class FirestoreInterface {
+class Firestore implements FirestoreInterface {
+  @override
+  CollectionReference collection(String path) {
+    return null;
+  }
+
+  @override
+  DocumentReference document(String path) {
+    return null;
+  }
+
+  @override
+  Future<void> settings({bool persistence}) {
+    return null;
+  }
+}
+
+abstract class FirestoreInterface {
   const FirestoreInterface();
 
   CollectionReference collection(String path) => null;
