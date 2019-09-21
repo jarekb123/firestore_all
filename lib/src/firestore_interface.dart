@@ -101,11 +101,15 @@ abstract class CollectionReference extends Query {
 /*
   Timestamp is converted to DateTime
 */
-abstract class GeoPoint {
-  num get latitude;
-  num get longitude;
+class GeoPoint {
+  const GeoPoint(this.latitude, this.longitude);
+
+  final num latitude;
+  final num longitude;
 }
 
-abstract class Blob {
-  Uint8List get bytes;
+class Blob {
+  const Blob(this.bytes);
+
+  final Uint8List bytes;
 }

@@ -247,22 +247,22 @@ class WebSnapshotMetadata implements SnapshotMetadata {
 }
 
 // --------- DATA TYPES ---------
-/*
-  Timestamp is converted to DateTime
-*/
-class WebGeoPoint extends GeoPoint {
-  final js.GeoPoint _geoPoint;
+MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
+  if (value is js.GeoPoint) return MapEntry(key, _fromRawGeoPoint(value));
+  if (value is js.Blob) return MapEntry(key, Blob(value.toUint8Array()));
 
-  WebGeoPoint(this._geoPoint);
-
-  num get latitude => _geoPoint.latitude;
-  num get longitude => _geoPoint.longitude;
+  return MapEntry(key, value);
 }
 
-class WebBlob extends Blob {
-  final js.Blob _blob;
+MapEntry<String, dynamic> _mapToMobileType(String key, dynamic value) {
+  if (value is GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
+  if (value is Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
 
-  WebBlob(this._blob);
-
-  Uint8List get bytes => _blob.toUint8Array();
+  return MapEntry(key, value);
 }
+
+GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) =>
+    GeoPoint(geoPoint.latitude, geoPoint.longitude);
+
+js.GeoPoint _toRawGeoPoint(GeoPoint geoPoint) =>
+    js.GeoPoint(geoPoint.latitude, geoPoint.longitude);
