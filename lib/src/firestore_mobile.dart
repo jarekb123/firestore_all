@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart' as cf;
 
 import 'firestore_interface.dart';
@@ -21,19 +19,19 @@ class Firestore implements FirestoreInterface {
 
   @override
   CollectionReference collection(String path) =>
-      WebCollectionReference._(_firestore.collection(path));
+      MobileCollectionReference._(_firestore.collection(path));
 
   @override
   DocumentReference document(String path) =>
-      WebDocumentReference._(_firestore.document(path));
+      MobileDocumentReference._(_firestore.document(path));
 
   @override
   Future<void> settings({bool persistence = true}) =>
       _firestore.settings(persistenceEnabled: persistence);
 }
 
-class WebCollectionReference extends WebQuery implements CollectionReference {
-  WebCollectionReference._(this._collectionReference)
+class MobileCollectionReference extends MobileQuery implements CollectionReference {
+  MobileCollectionReference._(this._collectionReference)
       : super._(_collectionReference);
 
   final cf.CollectionReference _collectionReference;
@@ -42,12 +40,12 @@ class WebCollectionReference extends WebQuery implements CollectionReference {
   Future<DocumentReference> add(Map<String, dynamic> data) {
     return _collectionReference
         .add(data)
-        .then((ref) => WebDocumentReference._(ref));
+        .then((ref) => MobileDocumentReference._(ref));
   }
 
   @override
   DocumentReference document([String path]) {
-    return WebDocumentReference._(_collectionReference.document(path));
+    return MobileDocumentReference._(_collectionReference.document(path));
   }
 
   @override
@@ -55,31 +53,31 @@ class WebCollectionReference extends WebQuery implements CollectionReference {
 
   @override
   DocumentReference get parent =>
-      WebDocumentReference._(_collectionReference.parent());
+      MobileDocumentReference._(_collectionReference.parent());
 
   @override
   String get path => _collectionReference.path;
 }
 
-class WebQuery implements Query {
+class MobileQuery implements Query {
   final cf.Query _query;
 
-  WebQuery._(this._query);
+  MobileQuery._(this._query);
 
   FirestoreInterface get firestore => Firestore._(_query.firestore);
 
   Future<QuerySnapshot> getDocuments() =>
-      _query.getDocuments().then((snapshot) => WebQuerySnapshot._(snapshot));
+      _query.getDocuments().then((snapshot) => MobileQuerySnapshot._(snapshot));
 
   Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false}) =>
       _query
           .snapshots(includeMetadataChanges: includeMetadataChanges)
-          .map((snapshot) => WebQuerySnapshot._(snapshot));
+          .map((snapshot) => MobileQuerySnapshot._(snapshot));
 
-  Query limit(int length) => WebQuery._(_query.limit(length));
+  Query limit(int length) => MobileQuery._(_query.limit(length));
 
   Query orderBy(String field, {bool descending = false}) =>
-      WebQuery._(_query.orderBy(field, descending: descending));
+      MobileQuery._(_query.orderBy(field, descending: descending));
 
   Query where(
     String fieldPath, {
@@ -89,7 +87,7 @@ class WebQuery implements Query {
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
   }) {
-    return WebQuery._(_query.where(
+    return MobileQuery._(_query.where(
       fieldPath,
       isEqualTo: isEqualTo,
       isLessThan: isLessThan,
@@ -100,53 +98,53 @@ class WebQuery implements Query {
   }
 }
 
-class WebQuerySnapshot implements QuerySnapshot {
+class MobileQuerySnapshot implements QuerySnapshot {
   final cf.QuerySnapshot _querySnapshot;
 
-  WebQuerySnapshot._(this._querySnapshot);
+  MobileQuerySnapshot._(this._querySnapshot);
 
   List<DocumentChange> get documentChanges => _querySnapshot.documentChanges
-      .map((docChange) => WebDocumentChange._(docChange))
+      .map((docChange) => MobileDocumentChange._(docChange))
       .toList(growable: false);
 
   List<DocumentSnapshot> get documents => _querySnapshot.documents
-      .map((docSnapshot) => WebDocumentSnapshot._(docSnapshot))
+      .map((docSnapshot) => MobileDocumentSnapshot._(docSnapshot))
       .toList(growable: false);
 
-  SnapshotMetadata get metadata => WebSnapshotMetadata(_querySnapshot.metadata);
+  SnapshotMetadata get metadata => MobileSnapshotMetadata(_querySnapshot.metadata);
 
   bool get isEmpty => documents.isEmpty;
 
   int get size => documents.length;
 }
 
-class WebDocumentChange implements DocumentChange {
+class MobileDocumentChange implements DocumentChange {
   final cf.DocumentChange _documentChange;
 
-  WebDocumentChange._(this._documentChange);
+  MobileDocumentChange._(this._documentChange);
 
   DocumentSnapshot get document =>
-      WebDocumentSnapshot._(_documentChange.document);
+      MobileDocumentSnapshot._(_documentChange.document);
   int get newIndex => _documentChange.newIndex;
   int get oldIndex => _documentChange.oldIndex;
   DocumentChangeType get type =>
       DocumentChangeType.values[_documentChange.type.index];
 }
 
-class WebDocumentSnapshot implements DocumentSnapshot {
+class MobileDocumentSnapshot implements DocumentSnapshot {
   final cf.DocumentSnapshot _documentSnapshot;
 
-  WebDocumentSnapshot._(this._documentSnapshot);
+  MobileDocumentSnapshot._(this._documentSnapshot);
 
   String get id => _documentSnapshot.documentID;
 
   bool get exists => _documentSnapshot.exists;
 
   SnapshotMetadata get metadata =>
-      WebSnapshotMetadata(_documentSnapshot.metadata);
+      MobileSnapshotMetadata(_documentSnapshot.metadata);
 
   DocumentReference get reference =>
-      WebDocumentReference._(_documentSnapshot.reference);
+      MobileDocumentReference._(_documentSnapshot.reference);
 
   Map<String, dynamic> get data => _documentSnapshot.data.map(_mapToSharedType);
 
@@ -154,26 +152,26 @@ class WebDocumentSnapshot implements DocumentSnapshot {
   dynamic operator [](String key) => data[key];
 }
 
-class WebDocumentReference implements DocumentReference {
+class MobileDocumentReference implements DocumentReference {
   final cf.DocumentReference _documentReference;
 
-  WebDocumentReference._(this._documentReference);
+  MobileDocumentReference._(this._documentReference);
 
   FirestoreInterface get firestore => Firestore._(_documentReference.firestore);
 
   String get id => _documentReference.documentID;
 
   CollectionReference get parent =>
-      WebCollectionReference._(_documentReference.parent());
+      MobileCollectionReference._(_documentReference.parent());
 
   String get path => _documentReference.path;
 
   CollectionReference collection(String collectionPath) =>
-      WebCollectionReference._(_documentReference.collection(collectionPath));
+      MobileCollectionReference._(_documentReference.collection(collectionPath));
 
   Future<DocumentSnapshot> get() => _documentReference
       .get()
-      .then((snapshot) => WebDocumentSnapshot._(snapshot));
+      .then((snapshot) => MobileDocumentSnapshot._(snapshot));
 
   Future<void> delete() => _documentReference.delete();
 
@@ -187,13 +185,13 @@ class WebDocumentReference implements DocumentReference {
   Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) =>
       _documentReference
           .snapshots(includeMetadataChanges: includeMetadataChanges)
-          .map((snapshot) => WebDocumentSnapshot._(snapshot));
+          .map((snapshot) => MobileDocumentSnapshot._(snapshot));
 }
 
-class WebSnapshotMetadata implements SnapshotMetadata {
+class MobileSnapshotMetadata implements SnapshotMetadata {
   final cf.SnapshotMetadata _snapshotMetadata;
 
-  WebSnapshotMetadata(this._snapshotMetadata);
+  MobileSnapshotMetadata(this._snapshotMetadata);
 
   bool get isFromCache => _snapshotMetadata.isFromCache;
   bool get hasPendingWrites => _snapshotMetadata.hasPendingWrites;

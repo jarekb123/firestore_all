@@ -8,27 +8,28 @@ typedef FirestoreInterface SetupFirestore({
   String webStorageBucket,
 });
 
-abstract class FirestoreApp {}
+class FirestoreApp {}
 
-abstract class FirestoreInterface {
+class FirestoreInterface {
   const FirestoreInterface();
 
-  CollectionReference collection(String path);
-  DocumentReference document(String path);
-  Future<void> settings({bool persistence});
+  CollectionReference collection(String path) => null;
+  DocumentReference document(String path) => null;
+  Future<void> settings({bool persistence}) => null;
 }
 
-abstract class Query {
+class Query {
   /// Non-null [FirestoreInterface] for the Cloud Firestore database (useful for performing transactions, etc.).
-  FirestoreInterface get firestore;
+  FirestoreInterface get firestore => null;
 
   /// Fetch the documents for this query
-  Future<QuerySnapshot> getDocuments();
+  Future<QuerySnapshot> getDocuments() => null;
 
-  Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false});
+  Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false}) =>
+      null;
 
-  Query limit(int length);
-  Query orderBy(String field, {bool descending = false});
+  Query limit(int length) => null;
+  Query orderBy(String field, {bool descending = false}) => null;
   Query where(
     String field, {
     dynamic isEqualTo,
@@ -36,65 +37,67 @@ abstract class Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
-  });
+  }) =>
+      null;
 }
 
-abstract class QuerySnapshot {
-  List<DocumentChange> get documentChanges;
-  List<DocumentSnapshot> get documents;
-  SnapshotMetadata get metadata;
-  bool get isEmpty;
-  int get size;
+class QuerySnapshot {
+  List<DocumentChange> get documentChanges => null;
+  List<DocumentSnapshot> get documents => null;
+  SnapshotMetadata get metadata => null;
+  bool get isEmpty => null;
+  int get size => null;
 }
 
-abstract class DocumentChange {
-  DocumentSnapshot get document;
-  int get newIndex;
-  int get oldIndex;
-  DocumentChangeType get type;
+class DocumentChange {
+  DocumentSnapshot get document => null;
+  int get newIndex => null;
+  int get oldIndex => null;
+  DocumentChangeType get type => null;
 }
 
 enum DocumentChangeType { added, modified, removed }
 
-abstract class DocumentSnapshot {
-  String get id;
-  bool get exists;
-  SnapshotMetadata get metadata;
-  DocumentReference get reference;
-  Map<String, dynamic> get data;
+class DocumentSnapshot {
+  String get id => null;
+  bool get exists => null;
+  SnapshotMetadata get metadata => null;
+  DocumentReference get reference => null;
+  Map<String, dynamic> get data => null;
 
   /// Reads individual values from the snapshot
-  dynamic operator [](String key);
+  dynamic operator [](String key) => null;
 }
 
-abstract class DocumentReference {
-  FirestoreInterface get firestore;
-  String get id;
-  CollectionReference get parent;
-  String get path;
+class DocumentReference {
+  FirestoreInterface get firestore => null;
+  String get id => null;
+  CollectionReference get parent => null;
+  String get path => null;
 
-  CollectionReference collection(String collectionPath);
+  CollectionReference collection(String collectionPath) => null;
 
-  Future<DocumentSnapshot> get();
-  Future<void> delete();
-  Future<void> setData(Map<String, dynamic> data, {bool merge = false});
-  Future<void> updateData(Map<String, dynamic> data);
+  Future<DocumentSnapshot> get() => null;
+  Future<void> delete() => null;
+  Future<void> setData(Map<String, dynamic> data, {bool merge = false}) => null;
+  Future<void> updateData(Map<String, dynamic> data) => null;
 
-  Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false});
+  Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) =>
+      null;
 }
 
-abstract class SnapshotMetadata {
-  bool get isFromCache;
-  bool get hasPendingWrites;
+class SnapshotMetadata {
+  bool get isFromCache => null;
+  bool get hasPendingWrites => null;
 }
 
-abstract class CollectionReference extends Query {
-  String get id;
-  DocumentReference get parent;
-  String get path;
+class CollectionReference extends Query {
+  String get id => null;
+  DocumentReference get parent => null;
+  String get path => null;
 
-  DocumentReference document([String path]);
-  Future<DocumentReference> add(Map<String, dynamic> data);
+  DocumentReference document([String path]) => null;
+  Future<DocumentReference> add(Map<String, dynamic> data) => null;
 }
 
 // --------- DATA TYPES ---------
