@@ -53,7 +53,7 @@ class WebCollectionReference extends WebQuery implements CollectionReference {
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) {
     return _collectionReference
-        .add(data)
+        .add(data.map(_mapToWebType))
         .then((ref) => WebDocumentReference._(ref));
   }
 
@@ -188,7 +188,7 @@ class WebDocumentSnapshot implements DocumentSnapshot {
   DocumentReference get reference =>
       WebDocumentReference._(_documentSnapshot.ref);
 
-  Map<String, dynamic> get data => _documentSnapshot.data();
+  Map<String, dynamic> get data => _documentSnapshot.data().map(_mapToSharedType);
 
   /// Reads individual values from the snapshot
   dynamic operator [](String key) => data[key];
@@ -220,11 +220,11 @@ class WebDocumentReference implements DocumentReference {
   Future<void> setData(Map<String, dynamic> data, {bool merge = false}) {
     final options = js.SetOptions(merge: merge);
 
-    return _documentReference.set(data, options);
+    return _documentReference.set(data.map(_mapToWebType), options);
   }
 
   Future<void> updateData(Map<String, dynamic> data) =>
-      _documentReference.update(data: data);
+      _documentReference.update(data: data.map(_mapToWebType));
 
   Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
     if (includeMetadataChanges) {
@@ -254,7 +254,7 @@ MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
   return MapEntry(key, value);
 }
 
-MapEntry<String, dynamic> _mapToMobileType(String key, dynamic value) {
+MapEntry<String, dynamic> _mapToWebType(String key, dynamic value) {
   if (value is GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
   if (value is Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
 

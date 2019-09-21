@@ -30,7 +30,8 @@ class Firestore implements FirestoreInterface {
       _firestore.settings(persistenceEnabled: persistence);
 }
 
-class MobileCollectionReference extends MobileQuery implements CollectionReference {
+class MobileCollectionReference extends MobileQuery
+    implements CollectionReference {
   MobileCollectionReference._(this._collectionReference)
       : super._(_collectionReference);
 
@@ -39,7 +40,7 @@ class MobileCollectionReference extends MobileQuery implements CollectionReferen
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) {
     return _collectionReference
-        .add(data)
+        .add(data.map(_mapToMobileType))
         .then((ref) => MobileDocumentReference._(ref));
   }
 
@@ -111,7 +112,8 @@ class MobileQuerySnapshot implements QuerySnapshot {
       .map((docSnapshot) => MobileDocumentSnapshot._(docSnapshot))
       .toList(growable: false);
 
-  SnapshotMetadata get metadata => MobileSnapshotMetadata(_querySnapshot.metadata);
+  SnapshotMetadata get metadata =>
+      MobileSnapshotMetadata(_querySnapshot.metadata);
 
   bool get isEmpty => documents.isEmpty;
 
@@ -167,7 +169,8 @@ class MobileDocumentReference implements DocumentReference {
   String get path => _documentReference.path;
 
   CollectionReference collection(String collectionPath) =>
-      MobileCollectionReference._(_documentReference.collection(collectionPath));
+      MobileCollectionReference._(
+          _documentReference.collection(collectionPath));
 
   Future<DocumentSnapshot> get() => _documentReference
       .get()
