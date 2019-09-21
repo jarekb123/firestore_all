@@ -4,16 +4,25 @@ Plugin that wraps Firestore from `firebase` and `cloud_firestore` packages and e
 
 ## Getting Started
 
+### Shared
+
 To get the Firestore instance use `setupFirestore` function.
 
 ```dart
-  var firestore = setupFirestore(
-    webApiKey: 'apiKey',
-    webAuthDomain: 'authDomain',
-    webDatabaseUrl: 'databaseUrl',
-    webProjectId: 'projectId',
-    webStorageBucket: 'storageBucket',
-  );
+var firestore = setupFirestore(
+  webApiKey: 'apiKey',
+  webAuthDomain: 'authDomain',
+  webDatabaseUrl: 'databaseUrl',
+  webProjectId: 'projectId',
+  webStorageBucket: 'storageBucket',
+);
+```
+
+### Web
+Add following code to `index.html` from `web` directory.
+```html
+<script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-firestore.js"></script>
 ```
 
 ## TODO
