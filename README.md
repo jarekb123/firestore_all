@@ -28,7 +28,10 @@ Add following code to `index.html` from `web` directory.
 ## TODO
 * [x] Wrap Firestore from `firebase` package (for Flutter web) 
 * [x] Wrap Firestore from `cloud_firestore` (for Flutter Android/iOS)
-* [x] Test: Check if it's working on web
+* [ ] Test: Check if it's working on web
+  * [ ] snapshot streams
+  * [ ] add, update, edit
+  * [ ] get document
 * [x] Test: Check if it's working on Android
 * [ ] Test: Check if it's working on iOS
 * [ ] Integrate with Firebase Auth
