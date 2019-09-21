@@ -5,7 +5,13 @@ Firestore firestore;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  firestore = setupFirestore();
+  firestore = setupFirestore(
+    webApiKey: 'apiKey',
+    webAuthDomain: 'authDomain',
+    webDatabaseUrl: 'databaseUrl',
+    webProjectId: 'projectId',
+    webStorageBucket: 'storageBucket',
+  );
   runApp(MyApp());
 }
 
