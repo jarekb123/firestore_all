@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 Firestore setupFirestore({
   String webApiKey,
   String webAuthDomain,
@@ -117,21 +115,4 @@ class CollectionReference extends Query {
 
   DocumentReference document([String path]) => null;
   Future<DocumentReference> add(Map<String, dynamic> data) => null;
-}
-
-// --------- DATA TYPES ---------
-/*
-  Timestamp is converted to DateTime
-*/
-class GeoPoint {
-  const GeoPoint(this.latitude, this.longitude);
-
-  final num latitude;
-  final num longitude;
-}
-
-class Blob {
-  const Blob(this.bytes);
-
-  final Uint8List bytes;
 }

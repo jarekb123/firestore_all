@@ -1,7 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:firebase/firebase.dart' as firebase;
 import 'package:firebase/firestore.dart' as js;
-
-import 'firestore_interface.dart';
 
 Firestore setupFirestore({
   String webApiKey,
@@ -21,18 +21,18 @@ Firestore setupFirestore({
   return Firestore._(firebase.firestore(app));
 }
 
-class Firestore implements FirestoreInterface {
+class Firestore {
   final js.Firestore _firestore;
 
   Firestore._(this._firestore);
 
   @override
   CollectionReference collection(String path) =>
-      WebCollectionReference._(_firestore.collection(path));
+      CollectionReference._(_firestore.collection(path));
 
   @override
   DocumentReference document(String path) =>
-      WebDocumentReference._(_firestore.doc(path));
+      DocumentReference._(_firestore.doc(path));
 
   @override
   Future<void> settings({bool persistence = true}) async {
@@ -42,8 +42,8 @@ class Firestore implements FirestoreInterface {
   }
 }
 
-class WebCollectionReference extends WebQuery implements CollectionReference {
-  WebCollectionReference._(this._collectionReference)
+class CollectionReference extends Query {
+  CollectionReference._(this._collectionReference)
       : super._(_collectionReference);
 
   final js.CollectionReference _collectionReference;
@@ -51,13 +51,13 @@ class WebCollectionReference extends WebQuery implements CollectionReference {
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) {
     return _collectionReference
-        .add(data.map(_mapToWebType))
-        .then((ref) => WebDocumentReference._(ref));
+        .add(data.map(_mapToType))
+        .then((ref) => DocumentReference._(ref));
   }
 
   @override
   DocumentReference document([String path]) {
-    return WebDocumentReference._(_collectionReference.doc(path));
+    return DocumentReference._(_collectionReference.doc(path));
   }
 
   @override
@@ -65,37 +65,37 @@ class WebCollectionReference extends WebQuery implements CollectionReference {
 
   @override
   DocumentReference get parent =>
-      WebDocumentReference._(_collectionReference.parent);
+      DocumentReference._(_collectionReference.parent);
 
   @override
   String get path => _collectionReference.path;
 }
 
-class WebQuery implements Query {
+class Query {
   final js.Query _query;
 
-  WebQuery._(this._query);
+  Query._(this._query);
 
-  FirestoreInterface get firestore => Firestore._(_query.firestore);
+  Firestore get firestore => Firestore._(_query.firestore);
 
   Future<QuerySnapshot> getDocuments() =>
-      _query.get().then((snapshot) => WebQuerySnapshot._(snapshot));
+      _query.get().then((snapshot) => QuerySnapshot._(snapshot));
 
   Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false}) {
     if (includeMetadataChanges) {
       return _query.onSnapshotMetadata
-          .map((snapshot) => WebQuerySnapshot._(snapshot));
+          .map((snapshot) => QuerySnapshot._(snapshot));
     } else {
-      return _query.onSnapshot.map((snapshot) => WebQuerySnapshot._(snapshot));
+      return _query.onSnapshot.map((snapshot) => QuerySnapshot._(snapshot));
     }
   }
 
-  Query limit(int length) => WebQuery._(_query.limit(length));
+  Query limit(int length) => Query._(_query.limit(length));
 
   Query orderBy(String field, {bool descending = false}) {
     var order = descending ? 'desc' : 'asc';
 
-    return WebQuery._(_query.orderBy(field, order));
+    return Query._(_query.orderBy(field, order));
   }
 
   Query where(
@@ -123,37 +123,37 @@ class WebQuery implements Query {
       query = query.where(fieldPath, '>=', isGreaterThanOrEqualTo);
     }
 
-    return WebQuery._(query);
+    return Query._(query);
   }
 }
 
-class WebQuerySnapshot implements QuerySnapshot {
+class QuerySnapshot {
   final js.QuerySnapshot _querySnapshot;
 
-  WebQuerySnapshot._(this._querySnapshot);
+  QuerySnapshot._(this._querySnapshot);
 
   List<DocumentChange> get documentChanges => _querySnapshot
       .docChanges()
-      .map((docChange) => WebDocumentChange._(docChange))
+      .map((docChange) => DocumentChange._(docChange))
       .toList(growable: false);
 
   List<DocumentSnapshot> get documents => _querySnapshot.docs
-      .map((docSnapshot) => WebDocumentSnapshot._(docSnapshot))
+      .map((docSnapshot) => DocumentSnapshot._(docSnapshot))
       .toList(growable: false);
 
-  SnapshotMetadata get metadata => WebSnapshotMetadata(_querySnapshot.metadata);
+  SnapshotMetadata get metadata => SnapshotMetadata(_querySnapshot.metadata);
 
   bool get isEmpty => documents.isEmpty;
 
   int get size => documents.length;
 }
 
-class WebDocumentChange implements DocumentChange {
+class DocumentChange {
   final js.DocumentChange _documentChange;
 
-  WebDocumentChange._(this._documentChange);
+  DocumentChange._(this._documentChange);
 
-  DocumentSnapshot get document => WebDocumentSnapshot._(_documentChange.doc);
+  DocumentSnapshot get document => DocumentSnapshot._(_documentChange.doc);
   int get newIndex => _documentChange.newIndex;
   int get oldIndex => _documentChange.oldIndex;
   DocumentChangeType get type => _changeTypeFromString(_documentChange.type);
@@ -171,20 +171,18 @@ DocumentChangeType _changeTypeFromString(String type) {
   }
 }
 
-class WebDocumentSnapshot implements DocumentSnapshot {
+class DocumentSnapshot {
   final js.DocumentSnapshot _documentSnapshot;
 
-  WebDocumentSnapshot._(this._documentSnapshot);
+  DocumentSnapshot._(this._documentSnapshot);
 
   String get id => _documentSnapshot.id;
 
   bool get exists => _documentSnapshot.exists;
 
-  SnapshotMetadata get metadata =>
-      WebSnapshotMetadata(_documentSnapshot.metadata);
+  SnapshotMetadata get metadata => SnapshotMetadata(_documentSnapshot.metadata);
 
-  DocumentReference get reference =>
-      WebDocumentReference._(_documentSnapshot.ref);
+  DocumentReference get reference => DocumentReference._(_documentSnapshot.ref);
 
   Map<String, dynamic> get data =>
       _documentSnapshot.data().map(_mapToSharedType);
@@ -193,53 +191,52 @@ class WebDocumentSnapshot implements DocumentSnapshot {
   dynamic operator [](String key) => data[key];
 }
 
-class WebDocumentReference implements DocumentReference {
+class DocumentReference {
   final js.DocumentReference _documentReference;
 
-  WebDocumentReference._(this._documentReference);
+  DocumentReference._(this._documentReference);
 
-  FirestoreInterface get firestore => Firestore._(_documentReference.firestore);
+  Firestore get firestore => Firestore._(_documentReference.firestore);
 
   String get id => _documentReference.id;
 
   CollectionReference get parent =>
-      WebCollectionReference._(_documentReference.parent);
+      CollectionReference._(_documentReference.parent);
 
   String get path => _documentReference.path;
 
   CollectionReference collection(String collectionPath) =>
-      WebCollectionReference._(_documentReference.collection(collectionPath));
+      CollectionReference._(_documentReference.collection(collectionPath));
 
-  Future<DocumentSnapshot> get() => _documentReference
-      .get()
-      .then((snapshot) => WebDocumentSnapshot._(snapshot));
+  Future<DocumentSnapshot> get() =>
+      _documentReference.get().then((snapshot) => DocumentSnapshot._(snapshot));
 
   Future<void> delete() => _documentReference.delete();
 
   Future<void> setData(Map<String, dynamic> data, {bool merge = false}) {
     final options = js.SetOptions(merge: merge);
 
-    return _documentReference.set(data.map(_mapToWebType), options);
+    return _documentReference.set(data.map(_mapToType), options);
   }
 
   Future<void> updateData(Map<String, dynamic> data) =>
-      _documentReference.update(data: data.map(_mapToWebType));
+      _documentReference.update(data: data.map(_mapToType));
 
   Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
     if (includeMetadataChanges) {
       return _documentReference.onMetadataChangesSnapshot
-          .map((snapshot) => WebDocumentSnapshot._(snapshot));
+          .map((snapshot) => DocumentSnapshot._(snapshot));
     } else {
       return _documentReference.onSnapshot
-          .map((snapshot) => WebDocumentSnapshot._(snapshot));
+          .map((snapshot) => DocumentSnapshot._(snapshot));
     }
   }
 }
 
-class WebSnapshotMetadata implements SnapshotMetadata {
+class SnapshotMetadata {
   final js.SnapshotMetadata _snapshotMetadata;
 
-  WebSnapshotMetadata(this._snapshotMetadata);
+  SnapshotMetadata(this._snapshotMetadata);
 
   bool get isFromCache => _snapshotMetadata.fromCache;
   bool get hasPendingWrites => _snapshotMetadata.hasPendingWrites;
@@ -253,7 +250,7 @@ MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
   return MapEntry(key, value);
 }
 
-MapEntry<String, dynamic> _mapToWebType(String key, dynamic value) {
+MapEntry<String, dynamic> _mapToType(String key, dynamic value) {
   if (value is GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
   if (value is Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
 
@@ -265,3 +262,18 @@ GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) =>
 
 js.GeoPoint _toRawGeoPoint(GeoPoint geoPoint) =>
     js.GeoPoint(geoPoint.latitude, geoPoint.longitude);
+
+class GeoPoint {
+  const GeoPoint(this.latitude, this.longitude);
+
+  final num latitude;
+  final num longitude;
+}
+
+class Blob {
+  const Blob(this.bytes);
+
+  final Uint8List bytes;
+}
+
+enum DocumentChangeType { added, modified, removed }
