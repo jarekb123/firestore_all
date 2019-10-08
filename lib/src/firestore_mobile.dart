@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart' as cf;
+import 'firestore_interface.dart' as i;
 
 Firestore setupFirestore({
   String webApiKey,
@@ -12,7 +11,7 @@ Firestore setupFirestore({
   return Firestore._(cf.Firestore.instance);
 }
 
-class Firestore {
+class Firestore implements i.FirestoreInterface {
   final cf.Firestore _firestore;
 
   Firestore._(this._firestore);
@@ -27,7 +26,7 @@ class Firestore {
       _firestore.settings(persistenceEnabled: persistence);
 }
 
-class CollectionReference extends Query {
+class CollectionReference extends Query implements i.CollectionReference {
   CollectionReference._(this._collectionReference)
       : super._(_collectionReference);
 
@@ -51,7 +50,7 @@ class CollectionReference extends Query {
   String get path => _collectionReference.path;
 }
 
-class Query {
+class Query implements i.Query {
   final cf.Query _query;
 
   Query._(this._query);
@@ -90,7 +89,7 @@ class Query {
   }
 }
 
-class QuerySnapshot {
+class QuerySnapshot implements i.QuerySnapshot {
   final cf.QuerySnapshot _querySnapshot;
 
   QuerySnapshot._(this._querySnapshot);
@@ -110,7 +109,7 @@ class QuerySnapshot {
   int get size => documents.length;
 }
 
-class DocumentChange {
+class DocumentChange implements i.DocumentChange {
   final cf.DocumentChange _documentChange;
 
   DocumentChange._(this._documentChange);
@@ -118,11 +117,12 @@ class DocumentChange {
   DocumentSnapshot get document => DocumentSnapshot._(_documentChange.document);
   int get newIndex => _documentChange.newIndex;
   int get oldIndex => _documentChange.oldIndex;
-  DocumentChangeType get type =>
-      DocumentChangeType.values[_documentChange.type.index];
+
+  i.DocumentChangeType get type =>
+      i.DocumentChangeType.values[_documentChange.type.index];
 }
 
-class DocumentSnapshot {
+class DocumentSnapshot implements i.DocumentSnapshot {
   final cf.DocumentSnapshot _documentSnapshot;
 
   DocumentSnapshot._(this._documentSnapshot);
@@ -142,7 +142,7 @@ class DocumentSnapshot {
   dynamic operator [](String key) => data[key];
 }
 
-class DocumentReference {
+class DocumentReference implements i.DocumentReference {
   final cf.DocumentReference _documentReference;
 
   DocumentReference._(this._documentReference);
@@ -177,7 +177,7 @@ class DocumentReference {
           .map((snapshot) => DocumentSnapshot._(snapshot));
 }
 
-class SnapshotMetadata {
+class SnapshotMetadata implements i.SnapshotMetadata {
   final cf.SnapshotMetadata _snapshotMetadata;
 
   SnapshotMetadata(this._snapshotMetadata);
@@ -193,36 +193,21 @@ class SnapshotMetadata {
 MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
   if (value is cf.GeoPoint) return MapEntry(key, _fromRawGeoPoint(value));
   if (value is cf.Timestamp) return MapEntry(key, value.toDate());
-  if (value is cf.Blob) return MapEntry(key, Blob(value.bytes));
+  if (value is cf.Blob) return MapEntry(key, i.Blob(value.bytes));
 
   return MapEntry(key, value);
 }
 
 MapEntry<String, dynamic> _mapToType(String key, dynamic value) {
-  if (value is GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
+  if (value is i.GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
   if (value is DateTime) return MapEntry(key, cf.Timestamp.fromDate(value));
-  if (value is Blob) return MapEntry(key, cf.Blob(value.bytes));
+  if (value is i.Blob) return MapEntry(key, cf.Blob(value.bytes));
 
   return MapEntry(key, value);
 }
 
-GeoPoint _fromRawGeoPoint(cf.GeoPoint geoPoint) =>
-    GeoPoint(geoPoint.latitude, geoPoint.longitude);
+i.GeoPoint _fromRawGeoPoint(cf.GeoPoint geoPoint) =>
+    i.GeoPoint(geoPoint.latitude, geoPoint.longitude);
 
-cf.GeoPoint _toRawGeoPoint(GeoPoint geoPoint) =>
+cf.GeoPoint _toRawGeoPoint(i.GeoPoint geoPoint) =>
     cf.GeoPoint(geoPoint.latitude, geoPoint.longitude);
-
-class GeoPoint {
-  const GeoPoint(this.latitude, this.longitude);
-
-  final num latitude;
-  final num longitude;
-}
-
-class Blob {
-  const Blob(this.bytes);
-
-  final Uint8List bytes;
-}
-
-enum DocumentChangeType { added, modified, removed }

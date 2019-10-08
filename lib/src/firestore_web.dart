@@ -1,7 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:firebase/firebase.dart' as firebase;
 import 'package:firebase/firestore.dart' as js;
+import 'firestore_interface.dart' as i;
 
 Firestore setupFirestore({
   String webApiKey,
@@ -21,7 +20,7 @@ Firestore setupFirestore({
   return Firestore._(firebase.firestore(app));
 }
 
-class Firestore {
+class Firestore implements i.Firestore {
   final js.Firestore _firestore;
 
   Firestore._(this._firestore);
@@ -42,7 +41,7 @@ class Firestore {
   }
 }
 
-class CollectionReference extends Query {
+class CollectionReference extends Query implements i.CollectionReference {
   CollectionReference._(this._collectionReference)
       : super._(_collectionReference);
 
@@ -71,7 +70,7 @@ class CollectionReference extends Query {
   String get path => _collectionReference.path;
 }
 
-class Query {
+class Query implements i.Query {
   final js.Query _query;
 
   Query._(this._query);
@@ -127,7 +126,7 @@ class Query {
   }
 }
 
-class QuerySnapshot {
+class QuerySnapshot implements i.QuerySnapshot {
   final js.QuerySnapshot _querySnapshot;
 
   QuerySnapshot._(this._querySnapshot);
@@ -148,7 +147,7 @@ class QuerySnapshot {
   int get size => documents.length;
 }
 
-class DocumentChange {
+class DocumentChange implements i.DocumentChange {
   final js.DocumentChange _documentChange;
 
   DocumentChange._(this._documentChange);
@@ -156,22 +155,22 @@ class DocumentChange {
   DocumentSnapshot get document => DocumentSnapshot._(_documentChange.doc);
   int get newIndex => _documentChange.newIndex;
   int get oldIndex => _documentChange.oldIndex;
-  DocumentChangeType get type => _changeTypeFromString(_documentChange.type);
+  i.DocumentChangeType get type => _changeTypeFromString(_documentChange.type);
 }
 
-DocumentChangeType _changeTypeFromString(String type) {
+i.DocumentChangeType _changeTypeFromString(String type) {
   if (type == 'added') {
-    return DocumentChangeType.added;
+    return i.DocumentChangeType.added;
   } else if (type == 'removed') {
-    return DocumentChangeType.removed;
+    return i.DocumentChangeType.removed;
   } else if (type == 'modified') {
-    return DocumentChangeType.modified;
+    return i.DocumentChangeType.modified;
   } else {
     return null;
   }
 }
 
-class DocumentSnapshot {
+class DocumentSnapshot implements i.DocumentSnapshot {
   final js.DocumentSnapshot _documentSnapshot;
 
   DocumentSnapshot._(this._documentSnapshot);
@@ -191,7 +190,7 @@ class DocumentSnapshot {
   dynamic operator [](String key) => data[key];
 }
 
-class DocumentReference {
+class DocumentReference implements i.DocumentReference {
   final js.DocumentReference _documentReference;
 
   DocumentReference._(this._documentReference);
@@ -233,7 +232,7 @@ class DocumentReference {
   }
 }
 
-class SnapshotMetadata {
+class SnapshotMetadata implements i.SnapshotMetadata {
   final js.SnapshotMetadata _snapshotMetadata;
 
   SnapshotMetadata(this._snapshotMetadata);
@@ -245,35 +244,21 @@ class SnapshotMetadata {
 // --------- DATA TYPES ---------
 MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
   if (value is js.GeoPoint) return MapEntry(key, _fromRawGeoPoint(value));
-  if (value is js.Blob) return MapEntry(key, Blob(value.toUint8Array()));
+  if (value is js.Blob) return MapEntry(key, i.Blob(value.toUint8Array()));
 
   return MapEntry(key, value);
 }
 
 MapEntry<String, dynamic> _mapToType(String key, dynamic value) {
-  if (value is GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
-  if (value is Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
+  if (value is i.GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
+  if (value is i.Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
 
   return MapEntry(key, value);
 }
 
-GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) =>
-    GeoPoint(geoPoint.latitude, geoPoint.longitude);
+i.GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) =>
+    i.GeoPoint(geoPoint.latitude, geoPoint.longitude);
 
-js.GeoPoint _toRawGeoPoint(GeoPoint geoPoint) =>
+js.GeoPoint _toRawGeoPoint(i.GeoPoint geoPoint) =>
     js.GeoPoint(geoPoint.latitude, geoPoint.longitude);
 
-class GeoPoint {
-  const GeoPoint(this.latitude, this.longitude);
-
-  final num latitude;
-  final num longitude;
-}
-
-class Blob {
-  const Blob(this.bytes);
-
-  final Uint8List bytes;
-}
-
-enum DocumentChangeType { added, modified, removed }

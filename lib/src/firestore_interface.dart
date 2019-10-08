@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 Firestore setupFirestore({
   String webApiKey,
   String webAuthDomain,
@@ -73,8 +75,6 @@ class DocumentChange {
   DocumentChangeType get type => null;
 }
 
-enum DocumentChangeType { added, modified, removed }
-
 class DocumentSnapshot {
   String get id => null;
   bool get exists => null;
@@ -115,4 +115,19 @@ class CollectionReference extends Query {
 
   DocumentReference document([String path]) => null;
   Future<DocumentReference> add(Map<String, dynamic> data) => null;
+}
+
+enum DocumentChangeType { added, modified, removed }
+
+class GeoPoint {
+  const GeoPoint(this.latitude, this.longitude);
+
+  final num latitude;
+  final num longitude;
+}
+
+class Blob {
+  const Blob(this.bytes);
+
+  final Uint8List bytes;
 }
