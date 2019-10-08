@@ -12,25 +12,8 @@ Firestore setupFirestore({
 
 class FirestoreApp {}
 
-class Firestore implements FirestoreInterface {
-  @override
-  CollectionReference collection(String path) {
-    return null;
-  }
-
-  @override
-  DocumentReference document(String path) {
-    return null;
-  }
-
-  @override
-  Future<void> settings({bool persistence}) {
-    return null;
-  }
-}
-
-abstract class FirestoreInterface {
-  const FirestoreInterface();
+abstract class Firestore {
+  const Firestore();
 
   CollectionReference collection(String path) => null;
   DocumentReference document(String path) => null;
@@ -38,8 +21,8 @@ abstract class FirestoreInterface {
 }
 
 class Query {
-  /// Non-null [FirestoreInterface] for the Cloud Firestore database (useful for performing transactions, etc.).
-  FirestoreInterface get firestore => null;
+  /// Non-null [Firestore] for the Cloud Firestore database (useful for performing transactions, etc.).
+  Firestore get firestore => null;
 
   /// Fetch the documents for this query
   Future<QuerySnapshot> getDocuments() => null;
@@ -87,7 +70,7 @@ class DocumentSnapshot {
 }
 
 class DocumentReference {
-  FirestoreInterface get firestore => null;
+  Firestore get firestore => null;
   String get id => null;
   CollectionReference get parent => null;
   String get path => null;

@@ -11,7 +11,7 @@ Firestore setupFirestore({
   return Firestore._(cf.Firestore.instance);
 }
 
-class Firestore implements i.FirestoreInterface {
+class Firestore implements i.Firestore {
   final cf.Firestore _firestore;
 
   Firestore._(this._firestore);
