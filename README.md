@@ -19,7 +19,7 @@ var firestore = setupFirestore(
 ```
 
 ### Web
-Add following code to `index.html` from `web` directory.
+Add following code to `index.html` in `web` directory.
 ```html
 <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.10.1/firebase-firestore.js"></script>
