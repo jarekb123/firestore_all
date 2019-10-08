@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cloud_firestore: ^0.12.9+4
-  firebase: ^5.0.4
+  cloud_firestore: ">=0.12.0 <0.13.0"
+  firebase: ">=5.0.0 <5.1.0"
 
 dev_dependencies:
   flutter_test:
