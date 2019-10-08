@@ -1,6 +1,6 @@
 name: firestore_all
 description: Plugin that wraps Firestore from `firebase` and `cloud_firestore` packages and expose them as a single API.
-version: 0.1.0+1
+version: 0.2.0
 author: Jaroslaw Butajlo <jaroslaw.butajlo@gmail.com>
 homepage: https://github.com/jarekb123/firestore_all
 issue_tracker: https://github.com/jarekb123/firestore_all/issues

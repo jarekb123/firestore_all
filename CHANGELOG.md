@@ -1,3 +1,6 @@
+## 0.2.0
+* remove FirestoreInterface class
+
 ## 0.1.0+1
 * apply pub.dev suggestions
 
