@@ -1,3 +1,4 @@
-## 0.0.1
+## 0.1.0
 
-* TODO: Describe initial release.
+* Wrap cloud_firestore (Android/iOS)
+* Wrap firebase (Web)

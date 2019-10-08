@@ -1,6 +1,6 @@
 name: firestore_all
 description: Firestore wrapper for Flutter web and mobile
-version: 0.0.1
+version: 0.1.0
 author: Jaroslaw Butajlo <jaroslaw.butajlo@gmail.com>
 homepage: https://github.com/jarekb123/firestore_all
 issue_tracker: https://github.com/jarekb123/firestore_all/issues
