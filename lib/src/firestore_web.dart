@@ -251,7 +251,8 @@ MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
 
 MapEntry<String, dynamic> _mapToType(String key, dynamic value) {
   if (value is i.GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
-  if (value is i.Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
+  if (value is i.Blob)
+    return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
 
   return MapEntry(key, value);
 }
@@ -261,4 +262,3 @@ i.GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) =>
 
 js.GeoPoint _toRawGeoPoint(i.GeoPoint geoPoint) =>
     js.GeoPoint(geoPoint.latitude, geoPoint.longitude);
-
