@@ -1,6 +1,6 @@
 name: firestore_all
 description: Plugin that wraps Firestore from `firebase` and `cloud_firestore` packages and expose them as a single API.
-version: 0.2.0
+version: 0.2.1
 author: Jaroslaw Butajlo <jaroslaw.butajlo@gmail.com>
 homepage: https://github.com/jarekb123/firestore_all
 issue_tracker: https://github.com/jarekb123/firestore_all/issues
@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cloud_firestore: ">=0.12.0 <0.13.0"
-  firebase: ">=5.0.0 <5.1.0"
+  cloud_firestore: ">=0.13.0 <0.14.0"
+  firebase: ">=7.1.0 <7.2.0"
 
 dev_dependencies:
   flutter_test:

@@ -26,12 +26,10 @@ class Firestore implements i.Firestore {
   Firestore._(this._firestore);
 
   @override
-  CollectionReference collection(String path) =>
-      CollectionReference._(_firestore.collection(path));
+  CollectionReference collection(String path) => CollectionReference._(_firestore.collection(path));
 
   @override
-  DocumentReference document(String path) =>
-      DocumentReference._(_firestore.doc(path));
+  DocumentReference document(String path) => DocumentReference._(_firestore.doc(path));
 
   @override
   Future<void> settings({bool persistence = true}) async {
@@ -39,19 +37,42 @@ class Firestore implements i.Firestore {
       await _firestore.enablePersistence();
     }
   }
+
+  Future<Map<String, dynamic>> runTransaction(i.TransactionHandler transactionHandler) =>
+      _firestore.runTransaction((t) => transactionHandler(Transaction._(t)));
+}
+
+class Transaction implements i.Transaction {
+  final js.Transaction _transaction;
+
+  Transaction._(this._transaction);
+
+  @override
+  Future<void> delete(i.DocumentReference documentReference) async =>
+      _transaction.delete((documentReference as DocumentReference)._documentReference);
+
+  @override
+  Future<i.DocumentSnapshot> get(i.DocumentReference documentReference) => _transaction
+      .get((documentReference as DocumentReference)._documentReference)
+      .then((snapshot) => DocumentSnapshot._(snapshot));
+
+  @override
+  Future<void> set(i.DocumentReference documentReference, Map<String, dynamic> data) async =>
+      _transaction.set((documentReference as DocumentReference)._documentReference, data);
+
+  @override
+  Future<void> update(i.DocumentReference documentReference, Map<String, dynamic> data) async =>
+      _transaction.update((documentReference as DocumentReference)._documentReference, data: data);
 }
 
 class CollectionReference extends Query implements i.CollectionReference {
-  CollectionReference._(this._collectionReference)
-      : super._(_collectionReference);
+  CollectionReference._(this._collectionReference) : super._(_collectionReference);
 
   final js.CollectionReference _collectionReference;
 
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) {
-    return _collectionReference
-        .add(data.map(_mapToType))
-        .then((ref) => DocumentReference._(ref));
+    return _collectionReference.add(data.map(_mapToType)).then((ref) => DocumentReference._(ref));
   }
 
   @override
@@ -63,8 +84,7 @@ class CollectionReference extends Query implements i.CollectionReference {
   String get id => _collectionReference.id;
 
   @override
-  DocumentReference get parent =>
-      DocumentReference._(_collectionReference.parent);
+  DocumentReference get parent => DocumentReference._(_collectionReference.parent);
 
   @override
   String get path => _collectionReference.path;
@@ -77,13 +97,11 @@ class Query implements i.Query {
 
   Firestore get firestore => Firestore._(_query.firestore);
 
-  Future<QuerySnapshot> getDocuments() =>
-      _query.get().then((snapshot) => QuerySnapshot._(snapshot));
+  Future<QuerySnapshot> getDocuments() => _query.get().then((snapshot) => QuerySnapshot._(snapshot));
 
   Stream<QuerySnapshot> snapshots({bool includeMetadataChanges = false}) {
     if (includeMetadataChanges) {
-      return _query.onSnapshotMetadata
-          .map((snapshot) => QuerySnapshot._(snapshot));
+      return _query.onSnapshotMetadata.map((snapshot) => QuerySnapshot._(snapshot));
     } else {
       return _query.onSnapshot.map((snapshot) => QuerySnapshot._(snapshot));
     }
@@ -131,14 +149,11 @@ class QuerySnapshot implements i.QuerySnapshot {
 
   QuerySnapshot._(this._querySnapshot);
 
-  List<DocumentChange> get documentChanges => _querySnapshot
-      .docChanges()
-      .map((docChange) => DocumentChange._(docChange))
-      .toList(growable: false);
+  List<DocumentChange> get documentChanges =>
+      _querySnapshot.docChanges().map((docChange) => DocumentChange._(docChange)).toList(growable: false);
 
-  List<DocumentSnapshot> get documents => _querySnapshot.docs
-      .map((docSnapshot) => DocumentSnapshot._(docSnapshot))
-      .toList(growable: false);
+  List<DocumentSnapshot> get documents =>
+      _querySnapshot.docs.map((docSnapshot) => DocumentSnapshot._(docSnapshot)).toList(growable: false);
 
   SnapshotMetadata get metadata => SnapshotMetadata(_querySnapshot.metadata);
 
@@ -153,8 +168,11 @@ class DocumentChange implements i.DocumentChange {
   DocumentChange._(this._documentChange);
 
   DocumentSnapshot get document => DocumentSnapshot._(_documentChange.doc);
+
   int get newIndex => _documentChange.newIndex;
+
   int get oldIndex => _documentChange.oldIndex;
+
   i.DocumentChangeType get type => _changeTypeFromString(_documentChange.type);
 }
 
@@ -183,8 +201,7 @@ class DocumentSnapshot implements i.DocumentSnapshot {
 
   DocumentReference get reference => DocumentReference._(_documentSnapshot.ref);
 
-  Map<String, dynamic> get data =>
-      _documentSnapshot.data().map(_mapToSharedType);
+  Map<String, dynamic> get data => _documentSnapshot.data().map(_mapToSharedType);
 
   /// Reads individual values from the snapshot
   dynamic operator [](String key) => data[key];
@@ -199,16 +216,14 @@ class DocumentReference implements i.DocumentReference {
 
   String get id => _documentReference.id;
 
-  CollectionReference get parent =>
-      CollectionReference._(_documentReference.parent);
+  CollectionReference get parent => CollectionReference._(_documentReference.parent);
 
   String get path => _documentReference.path;
 
   CollectionReference collection(String collectionPath) =>
       CollectionReference._(_documentReference.collection(collectionPath));
 
-  Future<DocumentSnapshot> get() =>
-      _documentReference.get().then((snapshot) => DocumentSnapshot._(snapshot));
+  Future<DocumentSnapshot> get() => _documentReference.get().then((snapshot) => DocumentSnapshot._(snapshot));
 
   Future<void> delete() => _documentReference.delete();
 
@@ -218,16 +233,13 @@ class DocumentReference implements i.DocumentReference {
     return _documentReference.set(data.map(_mapToType), options);
   }
 
-  Future<void> updateData(Map<String, dynamic> data) =>
-      _documentReference.update(data: data.map(_mapToType));
+  Future<void> updateData(Map<String, dynamic> data) => _documentReference.update(data: data.map(_mapToType));
 
   Stream<DocumentSnapshot> snapshots({bool includeMetadataChanges = false}) {
     if (includeMetadataChanges) {
-      return _documentReference.onMetadataChangesSnapshot
-          .map((snapshot) => DocumentSnapshot._(snapshot));
+      return _documentReference.onMetadataChangesSnapshot.map((snapshot) => DocumentSnapshot._(snapshot));
     } else {
-      return _documentReference.onSnapshot
-          .map((snapshot) => DocumentSnapshot._(snapshot));
+      return _documentReference.onSnapshot.map((snapshot) => DocumentSnapshot._(snapshot));
     }
   }
 }
@@ -238,6 +250,7 @@ class SnapshotMetadata implements i.SnapshotMetadata {
   SnapshotMetadata(this._snapshotMetadata);
 
   bool get isFromCache => _snapshotMetadata.fromCache;
+
   bool get hasPendingWrites => _snapshotMetadata.hasPendingWrites;
 }
 
@@ -251,14 +264,11 @@ MapEntry<String, dynamic> _mapToSharedType(String key, dynamic value) {
 
 MapEntry<String, dynamic> _mapToType(String key, dynamic value) {
   if (value is i.GeoPoint) return MapEntry(key, _toRawGeoPoint(value));
-  if (value is i.Blob)
-    return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
+  if (value is i.Blob) return MapEntry(key, js.Blob.fromUint8Array(value.bytes));
 
   return MapEntry(key, value);
 }
 
-i.GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) =>
-    i.GeoPoint(geoPoint.latitude, geoPoint.longitude);
+i.GeoPoint _fromRawGeoPoint(js.GeoPoint geoPoint) => i.GeoPoint(geoPoint.latitude, geoPoint.longitude);
 
-js.GeoPoint _toRawGeoPoint(i.GeoPoint geoPoint) =>
-    js.GeoPoint(geoPoint.latitude, geoPoint.longitude);
+js.GeoPoint _toRawGeoPoint(i.GeoPoint geoPoint) => js.GeoPoint(geoPoint.latitude, geoPoint.longitude);
